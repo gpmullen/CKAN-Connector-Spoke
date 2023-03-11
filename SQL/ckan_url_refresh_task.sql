@@ -1,14 +1,15 @@
 
-CREATE OR REPLACE TASK CKAN_URL_REFRESH
+CREATE OR REPLACE TASK CKAN_SPOKE_URL_REFRESH
 warehouse ='OPEN_DATA_VWH'
 SCHEDULE = '1440 MINUTE' //1 DAY
 AS
 BEGIN
-    insert into ckan_log select localtimestamp()
-     ,resource_update(resource_id,'CSV',(get_presigned_url(@published_extracts, table_name || '.csv',604800))) ext_resource_id
-     ,'REFRESH: ' || table_name
-    from control
-    where status='PUBLISHED';
+   update control_spoke
+    set presigned_url = purl
+FROM (
+        select get_presigned_url(@published_extracts, table_name || '.csv',604800) purl
+        from control_spoke
+    );
 
     insert into ckan_log select localtimestamp(), 'SCHEDULED REFRESH', 'COMPLETE';
 exception
