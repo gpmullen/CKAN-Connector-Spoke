@@ -1,4 +1,4 @@
-# CKAN-Publisher-App
+# CKAN-Publisher-App-SPOKE
 Snowflake to CKAN Connector https://medium.com/@gabriel.mullen/connecting-snowflake-to-ckan-for-publishing-to-the-open-data-portal-176384708f8e
 The California Department of Technology will use the CKAN Publisher App to easily publish data from Snowflake to the California Open Data Portal.
 

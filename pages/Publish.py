@@ -71,10 +71,10 @@ def publishTable():
     and ddlFrequency and txtTags and txtOwnerOrg and ddlDatabaseToPublish and ddlSchemaToPublish \
     and ddlTableToPublish and compiled_regex.match(txtContactEmail):
         session = Session.builder.configs(st.session_state.connection_parameters).create()        #Fully Qualified Table Name        
-        dfControl = session.create_dataframe([[None,txtDesc.lower(),ddlAccessLevel.lower(),txtContactName.lower(),txtContactEmail,txtRights,mapFrequency(ddlFrequency),txtTags,txtOwnerOrg,ddlDatabaseToPublish,ddlSchemaToPublish,ddlTableToPublish,status,None]])#,schema=["Notes","Access_Level","Contact_Name","Contact_Email","Rights","Accural_Periodicity","Tags","Owner_Org"])
+        dfControl = session.create_dataframe([[txtDesc.lower(),ddlAccessLevel.lower(),txtContactName.lower(),txtContactEmail,txtRights,mapFrequency(ddlFrequency),txtTags,txtOwnerOrg,ddlDatabaseToPublish,ddlSchemaToPublish,ddlTableToPublish,None]])#,schema=["Notes","Access_Level","Contact_Name","Contact_Email","Rights","Accural_Periodicity","Tags","Owner_Org"])
         #insert
         dfControl.write.mode("append").save_as_table("{0}.{1}.{2}".format(Control_DB,Control_Schema,Control_Table))
-        session.sql("call SP_PUBLISH_DATASET()").collect()
+        session.sql("call SP_PUBLISH_SPOKE_DATASET()").collect()
         session.close()
         st.success('Saved!', icon="✅")
     else:      
@@ -103,7 +103,7 @@ else:
 
     Control_DB = st.session_state.connection_parameters['database']
     Control_Schema = st.session_state.connection_parameters['schema']
-    Control_Table = 'CONTROL'
+    Control_Table = 'CONTROL_SPOKE'
     st.info("Control table is currently set to {0}.{1}.{2}".format(Control_DB,Control_Schema,Control_Table))
 
     if 'tables' not in st.session_state:
