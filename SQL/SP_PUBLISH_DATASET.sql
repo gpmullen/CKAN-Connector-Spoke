@@ -11,7 +11,7 @@ BEGIN
         //drop all published files to internal stage
         execute immediate ( 'copy into @published_extracts/' ||
         tbl.table_name || '.csv from ' ||
-        tbl.FQTN || ' SINGLE = TRUE MAX_FILE_SIZE=5368709120 OVERWRITE=TRUE file_format = (TYPE = csv COMPRESSION = none FIELD_OPTIONALLY_ENCLOSED_BY=''\042'');');
+        tbl.FQTN || ' SINGLE = TRUE MAX_FILE_SIZE=5368709120 OVERWRITE=TRUE HEADER=TRUE file_format = (TYPE = csv COMPRESSION = none FIELD_OPTIONALLY_ENCLOSED_BY=''\042'');');
     END FOR;
 
 
