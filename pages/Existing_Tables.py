@@ -29,9 +29,10 @@ else:
                 session.sql("DELETE from CONTROL_SPOKE WHERE md5(concat(NOTES,ACCESSLEVEL,CONTACT_NAME,CONTACT_EMAIL,RIGHTS,ACCRUALPERIODICITY,TAG_STRING,OWNER_ORG,DATABASE_NAME,SCHEMA_NAME,TABLE_NAME,STATUS))  = '{0}' ".format(md5)).collect()        
         st.experimental_rerun()        
     if btnRepublish:
-         for row in sel_row:
+        for row in sel_row:
             concat_cols = row["DATABASE_NAME"] + row["SCHEMA_NAME"] + row["TABLE_NAME"]
             md5 = hashlib.md5(concat_cols.encode()).hexdigest()                
             session.sql("UPDATE CONTROL_SPOKE SET presigned_url=NULL WHERE md5(concat(DATABASE_NAME,SCHEMA_NAME,TABLE_NAME)) = '{0}' ".format(md5)).collect()
-         st.experimental_rerun()    
+        session.sql("call SP_PUBLISH_SPOKE_DATASET()").collect()
+        st.experimental_rerun()    
     session.close()
