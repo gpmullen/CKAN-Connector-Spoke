@@ -97,43 +97,44 @@ def publishTable():
         if not txtOwnerOrg:
             st.info('Owner Org is empty')
 
-if 'connection_parameters' not in st.session_state:
-    st.error('Set Context first!')
-else:
+if __name__ == "__main__":
+    if 'connection_parameters' not in st.session_state:
+        st.error('Set Context first!')
+    else:
 
-    Control_DB = st.session_state.connection_parameters['database']
-    Control_Schema = st.session_state.connection_parameters['schema']
-    Control_Table = 'CONTROL_SPOKE'
-    st.info("Control table is currently set to {0}.{1}.{2}".format(Control_DB,Control_Schema,Control_Table))
+        Control_DB = st.session_state.connection_parameters['database']
+        Control_Schema = st.session_state.connection_parameters['schema']
+        Control_Table = 'CONTROL_SPOKE'
+        st.info("Control table is currently set to {0}.{1}.{2}".format(Control_DB,Control_Schema,Control_Table))
 
-    if 'tables' not in st.session_state:
-        session = Session.builder.configs(st.session_state.connection_parameters).create()
-        st.session_state.tables = session.sql('SHOW TABLES IN ACCOUNT').collect()
-        #next line is a little convoluted because the columns are slightly different and doing it this way avoids additional permission on the snowflake database to get the same information
-        st.session_state.tables.extend(session.sql('BEGIN SHOW VIEWS IN ACCOUNT;let ret resultset := (SELECT "created_on","name","database_name","schema_name" FROM TABLE (result_scan(LAST_QUERY_ID()))); return table(ret);END;').collect())
-        # 1 = Tables
-        # 2 = Database
-        # 3 = Schema
-        session.close()
+        if 'tables' not in st.session_state:
+            session = Session.builder.configs(st.session_state.connection_parameters).create()
+            st.session_state.tables = session.sql('SHOW TABLES IN ACCOUNT').collect()
+            #next line is a little convoluted because the columns are slightly different and doing it this way avoids additional permission on the snowflake database to get the same information
+            st.session_state.tables.extend(session.sql('BEGIN SHOW VIEWS IN ACCOUNT;let ret resultset := (SELECT "created_on","name","database_name","schema_name" FROM TABLE (result_scan(LAST_QUERY_ID()))); return table(ret);END;').collect())
+            # 1 = Tables
+            # 2 = Database
+            # 3 = Schema
+            session.close()
 
-    st.info('Choose a table to publish. All metadata must be populated.')
-    col1, col2 = st.columns(2)
-    with col1:
-        txtDesc = st.text_input("Description", help='Required', key='txtDesc')
-        ddlAccessLevel = st.selectbox("Access Level",options=('Public','Restricted','Non-public'), help='Required', key='ddlAccessLevel')
-        txtContactName = st.text_input("Contact Name", help='Required', key='txtContactName')
-        txtContactEmail = st.text_input("Contact Email", help='Required', key='txtContactEmail')
-        txtRights = st.text_input("Rights", help='Required', value='Public Use', key='txtRights')
-    with col2:
-        ddlFrequency = st.selectbox("Frequency",key='ddlFrequency', help='Required', options=('Irregular','Continuously updated','Hourly','Daily','Twice a week','Semiweekly','Biweekly','Semimonthly','Monthly','Every Two Months','Quarterly','Semiannual','Biennial','Decennial'))
-        txtTags = st.text_input("Tags", help='Required', value='Snowflake', key='txtTags')
-        txtOwnerOrg = st.text_input("Owner Org", help='Required',disabled=1,value='sf-testing', key='txtOwnerOrg')
-        ddlDatabaseToPublish = st.selectbox("Database", options=getDatabases(), help='Required', key='ddlDatabaseToPublish')
-        ddlSchemaToPublish = st.selectbox("Schema", options=getSchemas(), help='Required', key='ddlSchemaToPublish')
-    ddlTableToPublish = st.selectbox("Tables to Publish", options=getTables(), help='Required', key='ddlTableToPublish')
-    
-    col3,col4 = st.columns(2)
-    with col3:
-         btnPublish = st.button("Publish", on_click=publishTable, type='primary')
-    with col4:
-        btnRefresh = st.button("Refresh", on_click=refresh)
+        st.info('Choose a table to publish. All metadata must be populated.')
+        col1, col2 = st.columns(2)
+        with col1:
+            txtDesc = st.text_input("Description", help='Required', key='txtDesc')
+            ddlAccessLevel = st.selectbox("Access Level",options=('Public','Restricted','Non-public'), help='Required', key='ddlAccessLevel')
+            txtContactName = st.text_input("Contact Name", help='Required', key='txtContactName')
+            txtContactEmail = st.text_input("Contact Email", help='Required', key='txtContactEmail')
+            txtRights = st.text_input("Rights", help='Required', value='Public Use', key='txtRights')
+        with col2:
+            ddlFrequency = st.selectbox("Frequency",key='ddlFrequency', help='Required', options=('Irregular','Continuously updated','Hourly','Daily','Twice a week','Semiweekly','Biweekly','Semimonthly','Monthly','Every Two Months','Quarterly','Semiannual','Biennial','Decennial'))
+            txtTags = st.text_input("Tags", help='Required', value='Snowflake', key='txtTags')
+            txtOwnerOrg = st.text_input("Owner Org", help='Required',disabled=1,value='sf-testing', key='txtOwnerOrg')
+            ddlDatabaseToPublish = st.selectbox("Database", options=getDatabases(), help='Required', key='ddlDatabaseToPublish')
+            ddlSchemaToPublish = st.selectbox("Schema", options=getSchemas(), help='Required', key='ddlSchemaToPublish')
+        ddlTableToPublish = st.selectbox("Tables to Publish", options=getTables(), help='Required', key='ddlTableToPublish')
+        
+        col3,col4 = st.columns(2)
+        with col3:
+            btnPublish = st.button("Publish", on_click=publishTable, type='primary')
+        with col4:
+            btnRefresh = st.button("Refresh", on_click=refresh)
