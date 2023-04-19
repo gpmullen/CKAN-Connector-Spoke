@@ -21,7 +21,7 @@ BEGIN
                                                                     
 update resources
     set presigned_url = purl
-    , datetime = CURRENT_TIMESTAMP()
+    , date_updated = CURRENT_TIMESTAMP()
 FROM (
         select get_presigned_url(@published_extracts, table_name || '.csv',604800) purl
         from resources
