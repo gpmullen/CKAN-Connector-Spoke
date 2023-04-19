@@ -5,7 +5,7 @@
     var query_string;
 
        let row = EVENT.body.data[0];
-       query_string = "?fq=organization:" + row[1] + "&include_private=true";
+       query_string = "?fq=organization:" + row[1] + "&include_private=true&rows=100&start=0";
 
     return { "urlSuffix": query_string }
     ';    
