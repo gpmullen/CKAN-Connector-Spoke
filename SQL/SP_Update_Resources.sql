@@ -3,8 +3,7 @@ RETURNS VARIANT
 LANGUAGE SQL
 AS
 DECLARE
-    TABLES RESULTSET DEFAULT(select database_name, schema_name, table_name, database_name||'.'||schema_name||'.'||table_name FQTN 
-    from resources);
+    TABLES RESULTSET DEFAULT(select database_name, schema_name, table_name, database_name||'.'||schema_name||'.'||table_name FQTN from resources);
     ret variant default '{}';   
 BEGIN
 
@@ -12,7 +11,7 @@ BEGIN
         //drop all published files to internal stage
         execute immediate ( 'copy into @published_extracts/' ||
         tbl.table_name || '.csv from ' ||
-        tbl.FQTN || ' SINGLE = TRUE MAX_FILE_SIZE=5368709120 OVERWRITE=TRUE HEADER=TRUE file_format = (TYPE = csv COMPRESSION = none NULL_IF=('') EMPTY_FIELD_AS_NULL = FALSE FIELD_OPTIONALLY_ENCLOSED_BY=''\042'');');
+        tbl.FQTN || ' SINGLE = TRUE MAX_FILE_SIZE=5368709120 OVERWRITE=TRUE HEADER=TRUE file_format = (TYPE = csv COMPRESSION = none NULL_IF=('''') EMPTY_FIELD_AS_NULL = FALSE FIELD_OPTIONALLY_ENCLOSED_BY=''\042'');');
     END FOR;
 
 
