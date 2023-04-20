@@ -3,14 +3,17 @@ RETURNS VARIANT
 LANGUAGE SQL
 AS
 DECLARE
-    TABLES RESULTSET DEFAULT(select database_name, schema_name, table_name, database_name||'.'||schema_name||'.'||table_name FQTN from resources);
+    TABLES RESULTSET DEFAULT(select database_name, schema_name, table_name
+                                , database_name||'.'||schema_name||'.'||table_name FQTN 
+                                ,file_name
+                            from resources);
     ret variant default '{}';   
 BEGIN
 
     FOR tbl IN tables DO
         //drop all published files to internal stage
         execute immediate ( 'copy into @published_extracts/' ||
-        tbl.table_name || '.csv from ' ||
+        IFNULL(tbl.file_name,tbl.table_name) || '.csv from ' ||
         tbl.FQTN || ' SINGLE = TRUE MAX_FILE_SIZE=5368709120 OVERWRITE=TRUE HEADER=TRUE file_format = (TYPE = csv COMPRESSION = none NULL_IF=('''') EMPTY_FIELD_AS_NULL = FALSE FIELD_OPTIONALLY_ENCLOSED_BY=''\042'');');
     END FOR;
 
@@ -22,7 +25,7 @@ update resources
     set presigned_url = purl
     , date_updated = CURRENT_TIMESTAMP()
 FROM (
-        select get_presigned_url(@published_extracts, table_name || '.csv',604800) purl
+        select get_presigned_url(@published_extracts, IFNULL(file_name,table_name) || '.csv',604800) purl
         from resources
     );
 
