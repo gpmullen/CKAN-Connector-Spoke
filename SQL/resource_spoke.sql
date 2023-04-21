@@ -10,4 +10,6 @@ owner_org string NOT NULL
 ,file_name null
 );
 
+//re-add this table to the data share after modification
+
 create or replace stream resource_stream on table resources;
