@@ -26,8 +26,14 @@ update resources
     , date_updated = CURRENT_TIMESTAMP()
 FROM (
         select get_presigned_url(@published_extracts, IFNULL(file_name,table_name) || '.csv',604800) purl
+        ,database_name
+        ,schema_name
+        ,table_name
         from resources
-    );
+    ) r
+where r.database_name = resources.database_name
+and r.schema_name = resources.schema_name
+and r.table_name = resources.table_name;
 
 insert into ckan_log 
 select current_timestamp(),null,table_name 
