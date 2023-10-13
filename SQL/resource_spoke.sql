@@ -7,7 +7,7 @@ owner_org string NOT NULL
 ,resource_id string not null
 ,presigned_url string NULL
 ,date_updated timestamp default CURRENT_TIMESTAMP()
-,file_name null
+,file_name string null
 );
 
 //re-add this table to the data share after modification
