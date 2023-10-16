@@ -8,7 +8,7 @@ DECLARE
                                 ,file_name
                             from resources);
     ret variant default '{}';   
-    rec_limit_for_gzip int default 10000;
+    rec_limit_for_gzip int default 100000;
 BEGIN
 
     FOR tbl IN tables DO
