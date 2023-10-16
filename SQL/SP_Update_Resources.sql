@@ -9,7 +9,7 @@ DECLARE
                             from resources);
     ret variant default '{}';   
     rec_limit_for_gzip int default 250000;
-    ext string default '.csv'
+    ext string default '.csv';
 BEGIN
 
     FOR tbl IN tables DO
@@ -18,7 +18,7 @@ BEGIN
         FOR rec in recs DO //the is only one record to process,but we still need to use a looping syntax
             IF (rec.cnt > rec_limit_for_gzip) THEN //zip up the file if it's above the defined threshold
                 //drop all published files to internal stage
-                ext := '.csv.gz'
+                ext := '.csv.gz';
                 execute immediate ( 'copy into @published_extracts/' ||
                 IFNULL(tbl.file_name,tbl.table_name) || ext || ' from ' ||
                 tbl.FQTN || ' SINGLE = TRUE MAX_FILE_SIZE=5368709120 OVERWRITE=TRUE HEADER=TRUE file_format = (TYPE = csv COMPRESSION = GZIP NULL_IF=('''') EMPTY_FIELD_AS_NULL = FALSE FIELD_OPTIONALLY_ENCLOSED_BY=''\042'');');
